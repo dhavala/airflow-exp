@@ -25,14 +25,15 @@ from airflow.settings import Session
 from airflow import models
 
 
-def push_pickled_dag_to_folder(dag):
-    airflow_dags_dropbox = ''.join([os.environ['AIRFLOW_HOME'],'/dags/'])
-    dag_pkl_name = ''.join([dag.dag_id,'.pkl'])
+def push_pickled_dag_to_folder(dag,dag_folder_path=''):
+    
+    if not dag_folder_path:
+        dag_folder_path = ''.join([os.environ['AIRFLOW_HOME'],'/dags/'])
+    
+    dag_pkl_name = ''.join([dag_folder_path,dag.dag_id,'.pkl'])
+    
     with open(dag_pkl_name,'wb') as f:
         pickle.dump(dag,f,pickle.HIGHEST_PROTOCOL)
-
-
-
 
 
 now = date.today()
@@ -58,28 +59,3 @@ t2  = DummyOperator(task_id='task2', dag=dag)
 t3  = DummyOperator(task_id='task3', dag=dag)
 
 push_pickled_dag_to_folder(dag)
-
-#t2.set_upstream(t1)
-#t3.set_upstream(t2)
-
-# # add it to the DagBag
-# dagbag = DagBag()
-# dagbag.bag_dag(dag,parent_dag=dag,root_dag=dag)
-# dag.sync_to_db()
-
-
-airflow_dags_dropbox = ''.join([os.environ['AIRFLOW_HOME'],'/dags/'])
-dag_pkl_name = ''.join([dag.dag_id,'.pkl'])
-with open(dag_pkl_name,'wb') as f:
-    pickle.dump(dag,f,pickle.HIGHEST_PROTOCOL)
-
-# run_id = '0x1'
-# execution_date = now
-# run_conf = None
-# trigger = dag.create_dagrun(
-#         run_id=run_id,
-#         execution_date=execution_date,
-#         state=State.RUNNING,
-#         conf=run_conf,
-#         external_trigger=True
-#     )
