@@ -4,7 +4,59 @@ However, in some cases, you might have created DAG objects programmatically, not
 
 Since we already have a valid DAG object, we can simply pickle them, place those pickled DAG objects in the default folder, and a have colocated .py script that can load the picked DAG objects into memory. Basically, pickled DAG objects have to made available to __airflow__ via a .py file.
 
-Instructions
+### Approach - 1
+
+1. Have this helper function to save/push your DAG object to the default DAG folder. It will save a pickle file along with reader script. The script will be picked up by airflow when it scans new DAGs in that folder
+```python
+def register_pickled_dag(dag,dag_folder_path=''):
+    
+    """
+    registers (pushes) an airflow dag object to its dag folder, along with python script that
+    can load the pickled dag into memory. name of the pickled dag and its reader py script will
+    have have the dag as its name with a "auto_"
+
+    Inputs:
+    dag: an airflow dag object
+    dag_folder_path='': If empty, pickled dag objects will be saved into
+    airflow's default dag folder
+    """
+
+    dag_name = ''.join(['auto_',dag.dag_id])
+    
+    if not dag_folder_path:
+        dag_folder_path = ''.join([os.environ['AIRFLOW_HOME'],'/dags/'])
+    
+    dag_pkl_name = ''.join([dag_folder_path,dag_name,'.pkl'])
+    dag_pyfile_name = ''.join([dag_folder_path,dag_name,'.py'])
+    
+    with open(dag_pkl_name,'wb') as f:
+        pickle.dump(dag,f,pickle.HIGHEST_PROTOCOL)
+
+    pyscript = """
+    import pickle
+    from airflow.models import DAG
+    
+    with open('{}', 'rb') as f:
+        tmp_object = pickle.load(f)
+        
+    if isinstance(tmp_object,DAG):
+            globals()['{}'] = tmp_object
+    del tmp_object
+    """
+    pyscript = pyscript.format(''.join([dag_name,'.pkl']),dag_name)
+    dedented_pyscript = textwrap.dedent(pyscript).strip()
+
+    with open(dag_pyfile_name,'w') as f:
+        f.write(dedented_pyscript)
+```
+
+2. pickle and save your dag
+```python
+register_pickled_dag(dag)
+```
+
+
+### Approach - 2
 
 
 1. Have this helper function to save/push your DAG object to the default DAG folder
