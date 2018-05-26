@@ -6,7 +6,7 @@ Since we already have a valid DAG object, we can simply pickle them, place those
 
 ### Approach - 1
 
-1. Have this helper function to save/push your DAG object to the default DAG folder. It will save a pickle file along with reader script. The script will be picked up by airflow when it scans new DAGs in that folder
+1. Have this helper function [in Eg1.py](https://github.com/dhavala/airflow-exp/blob/master/Eg1.py) to save/push your DAG object to the default DAG folder. It will save a pickle file along with reader script. The script will be picked up by airflow when it scans new DAGs in that folder
 ```python
 def register_pickled_dag(dag,dag_folder_path=''):
     
@@ -102,6 +102,6 @@ for pickled_dag in pickled_dags:
 You are set. Now the saved DAGs will be available to the DagBag. It is not cleanest way, but at least, we dont've to generate py code with exec and eval staements and re-creating the DAG logic again. 
 
 Known Issue:
-Notice however, that these DAGs will not show up proper in Web UI. They appear under DAG/Task Runs but are not clicable. Other natively created py DAGs are clickable so that you can look at their source code.
+Notice however, that these DAGs will not show up proper in Web UI. They appear under DAG/Task Runs but not clicable (under Approach 1). But code view is not available. 
 
-It would have been nicer, were we able to directly push DAG objects into the DB without having to the hacky-way.
+It would have been nicer, if were we able to directly push DAG objects into the DB without having to the hacky-way.

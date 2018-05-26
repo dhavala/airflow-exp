@@ -39,9 +39,9 @@ def push_pickled_dag_to_folder(dag,dag_folder_path=''):
 def register_pickled_dag(dag,dag_folder_path=''):
     
     """
-    registers (pushes) an airflow dag object to its dag folder, along with python script that
-    can load the pickled dag into memory. name of the pickled dag and its reader py script will
-    have have the dag as its name with a "auto_"
+    Registers (pushes) an airflow dag object to its dag folder, along with python script that
+    can load the pickled dag into memory. Name of the pickled dag and its reader py script will
+    have the 'dag' as its name with the prefix "auto_"
 
     Inputs:
     dag: an airflow dag object
