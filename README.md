@@ -48,3 +48,5 @@ for pickled_dag in pickled_dags:
 ```
 
 you are set. Now the saved DAGs will be available to the DagBag. It is not cleanest way, but at least, we dont've to generate py code with exec and eval staements and re-creating the DAG logic again.
+
+It would have been nicer, were we able to directly push DAG objects into the DB without having to the hacky-way.
