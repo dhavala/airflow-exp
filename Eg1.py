@@ -45,7 +45,7 @@ default_args = {
         #'start_date': datetime(2018,2,5)
     }
 
-dag = DAG('EgTrigger_03', default_args=default_args,schedule_interval='@once')
+dag = DAG('EgPickedDag_01', default_args=default_args,schedule_interval='@once')
 
 # t1, t2 and t3 are examples of tasks created by instantiating operators
 t1 = BashOperator(
