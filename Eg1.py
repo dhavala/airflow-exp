@@ -22,15 +22,15 @@ from airflow.models import TaskInstance
 #from airflow.utils import timezone
 from airflow.utils.state import State
 from airflow.settings import Session
-from airflow import models
+from airflow import models, settings
 
 # depreciated
 def push_pickled_dag_to_folder(dag,dag_folder_path=''):
     
     if not dag_folder_path:
-        dag_folder_path = ''.join([os.environ['AIRFLOW_HOME'],'/dags/'])
+        dag_folder_path = settings.DAGS_FOLDER
     
-    dag_pkl_name = ''.join([dag_folder_path,dag.dag_id,'.pkl'])
+    dag_pkl_name = os.path.join(dag_folder_path,''.join([dag.dag_id,'.pkl']))
     
     with open(dag_pkl_name,'wb') as f:
         pickle.dump(dag,f,pickle.HIGHEST_PROTOCOL)
@@ -56,11 +56,13 @@ def register_pickled_dag(dag,dag_folder_path=''):
     dag_name = ''.join(['auto_',dag.dag_id])
     
     if not dag_folder_path:
-        dag_folder_path = ''.join([os.environ['AIRFLOW_HOME'],'/dags/'])
+        dag_folder_path = settings.DAGS_FOLDER
     
-    dag_pkl_name = ''.join([dag_folder_path,dag_name,'.pkl'])
-    dag_pyfile_name = ''.join([dag_folder_path,dag_name,'.py'])
+    dag_pkl_name = os.path.join(dag_folder_path,''.join([dag_name,'.pkl']))
+    dag_pyfile_name = os.path.join(dag_folder_path,''.join([dag_name,'.py']))
     
+    print(dag_pkl_name)
+
     with open(dag_pkl_name,'wb') as f:
         pickle.dump(dag,f,pickle.HIGHEST_PROTOCOL)
 
@@ -107,4 +109,4 @@ t2  = DummyOperator(task_id='task2', dag=dag)
 t3  = DummyOperator(task_id='task3', dag=dag)
 
 #push_pickled_dag_to_folder(dag)
-register_pickled_dag(dag)
+register_pickled_dag(dag,'./')
